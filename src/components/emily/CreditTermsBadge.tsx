@@ -1,59 +1,158 @@
-import * as React from "react"
+"use client"
+
+import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
 
-export interface CreditTermsBadgeProps {
-  /** Credit terms type: 'Net 30', 'Net 60', 'prepaid', or custom */
-  terms: string
-  /** Credit limit amount */
-  limit: number
-  /** Current usage/balance amount */
-  usage_balance: number
-  /** Optional CSS class name */
-  className?: string
+interface CreditTermsBadgeProps {
+    termType?: string | null
+    customDays?: number | null
+    discountPercent?: number | null
+    discountDays?: number | null
+    showDetails?: boolean
+    size?: "sm" | "default" | "lg"
+    variant?: "default" | "secondary" | "outline" | "success" | "warning"
+    className?: string
 }
 
-function CreditTermsBadge({
-  terms,
-  limit,
-  usage_balance,
-  className,
+const termTypeLabels: Record<string, string> = {
+    NET_15: "Net 15",
+    NET_30: "Net 30",
+    NET_45: "Net 45",
+    NET_60: "Net 60",
+    NET_90: "Net 90",
+    COD: "COD",
+    PREPAID: "Prepaid",
+    CUSTOM: "Custom",
+}
+
+const termTypeDescriptions: Record<string, string> = {
+    NET_15: "Payment due within 15 days",
+    NET_30: "Payment due within 30 days",
+    NET_45: "Payment due within 45 days",
+    NET_60: "Payment due within 60 days",
+    NET_90: "Payment due within 90 days",
+    COD: "Payment on delivery",
+    PREPAID: "Payment in advance",
+    CUSTOM: "Custom payment terms",
+}
+
+const variantMap: Record<string, "default" | "secondary" | "outline" | "success" | "warning"> = {
+    default: "default",
+    secondary: "secondary",
+    outline: "outline",
+    success: "secondary",
+    warning: "outline",
+}
+
+export function CreditTermsBadge({
+    termType,
+    customDays,
+    discountPercent,
+    discountDays,
+    showDetails = false,
+    size = "default",
+    variant = "default",
+    className,
 }: CreditTermsBadgeProps) {
-  // Determine color variant based on terms
-  const getVariant = () => {
-    const termsLower = terms.toLowerCase()
-    if (termsLower.includes("30")) return "credit-net-30"
-    if (termsLower.includes("60")) return "credit-net-60"
-    if (termsLower.includes("prepaid")) return "credit-prepaid"
-    return "credit-default"
-  }
+    if (!termType) {
+        return (
+            <Badge
+                variant="outline"
+                className={cn("font-mono text-xs", className)}
+            >
+                Standard
+            </Badge>
+        )
+    }
 
-  // Calculate usage percentage for display
-  const usagePercent = limit > 0 ? Math.round((usage_balance / limit) * 100) : 0
+    const label = termTypeLabels[termType] || termType
+    
+    // For custom terms with days
+    const displayText = termType === "CUSTOM" && customDays
+        ? `Net ${customDays}`
+        : label
 
-  const variant = getVariant()
+    // Get effective variant based on term type
+    const getVariant = () => {
+        if (variant !== "default") return variantMap[variant]
+        
+        // COD and Prepaid get special styling
+        if (termType === "COD") return "warning"
+        if (termType === "PREPAID") return "success"
+        return "default"
+    }
 
-  const variantStyles = {
-    "credit-net-30": "bg-emerald-100 text-emerald-800 border-emerald-200",
-    "credit-net-60": "bg-blue-100 text-blue-800 border-blue-200",
-    "credit-prepaid": "bg-amber-100 text-amber-800 border-amber-200",
-    "credit-default": "bg-gray-100 text-gray-800 border-gray-200",
-  }
-
-  return (
-    <div
-      data-slot="credit-terms-badge"
-      className={cn(
-        "inline-flex items-center justify-center rounded-full border px-2.5 py-0.5 text-xs font-medium w-fit whitespace-nowrap shrink-0 gap-1.5 transition-[color,box-shadow] overflow-hidden",
-        variantStyles[variant as keyof typeof variantStyles],
-        className
-      )}
-    >
-      <span className="font-semibold">{terms}</span>
-      <span className="opacity-75">
-        {usagePercent}% ({usage_balance}/{limit})
-      </span>
-    </div>
-  )
+    return (
+        <div className={cn("inline-flex flex-col gap-1", className)}>
+            <Badge
+                variant={getVariant()}
+                className={cn(
+                    size === "sm" && "text-[10px] h-5 px-1.5",
+                    size === "lg" && "h-7 text-sm px-3",
+                )}
+            >
+                {displayText}
+            </Badge>
+            
+            {showDetails && (
+                <div className="flex flex-wrap gap-1">
+                    {/* Early payment discount indicator */}
+                    {discountPercent && discountPercent > 0 && discountDays && (
+                        <span className="text-[10px] text-muted-foreground">
+                            {discountPercent}% discount if paid within {discountDays} days
+                        </span>
+                    )}
+                </div>
+            )}
+        </div>
+    )
 }
 
-export { CreditTermsBadge }
+// Compact version for table cells
+export function CreditTermsBadgeCompact({
+    termType,
+    customDays,
+    className,
+}: Omit<CreditTermsBadgeProps, "showDetails" | "size" | "variant">) {
+    if (!termType) return null
+
+    const label = termTypeLabels[termType] || termType
+    const displayText = termType === "CUSTOM" && customDays
+        ? `${customDays}d`
+        : label.replace("NET_", "").replace("_", "-")
+
+    return (
+        <span className={cn("font-mono text-xs bg-muted px-1.5 py-0.5 rounded", className)}>
+            {displayText}
+        </span>
+    )
+}
+
+// Status badge for credit account
+interface CreditStatusBadgeProps {
+    status?: string | null
+    showLabel?: boolean
+}
+
+const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "destructive" | "outline" }> = {
+    ACTIVE: { label: "Active", variant: "success" },
+    SUSPENDED: { label: "Suspended", variant: "destructive" },
+    EXPIRED: { label: "Expired", variant: "outline" },
+    PENDING_APPROVAL: { label: "Pending", variant: "secondary" },
+}
+
+export function CreditStatusBadge({
+    status,
+    showLabel = true,
+}: CreditStatusBadgeProps) {
+    if (!status) return null
+
+    const config = statusConfig[status] || { label: status, variant: "outline" }
+    const variant = config.variant === "success" ? "default" : config.variant
+
+    return (
+        <Badge variant={variant} className={cn(!showLabel && "px-1")}>
+            {showLabel ? config.label : "●"}
+        </Badge>
+    )
+}
