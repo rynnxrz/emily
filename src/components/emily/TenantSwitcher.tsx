@@ -1,221 +1,118 @@
 "use client"
 
-import { useState } from "react"
+import * as React from "react"
 import {
-    DropdownMenu,
-    DropdownMenuContent,
-    DropdownMenuItem,
-    DropdownMenuLabel,
-    DropdownMenuSeparator,
-    DropdownMenuTrigger,
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { 
-    Building2, 
-    ChevronDown, 
-    Building,
-    Plus,
-    Settings
-} from "lucide-react"
-import { cn } from "@/lib/utils"
+import { ChevronDown } from "lucide-react"
 
-interface Tenant {
-    id: string
-    name: string
-    slug: string
-    logo_url?: string | null
-    plan?: string
-    is_current?: boolean
+export interface Tenant {
+  id: string
+  name: string
+  slug: string
+  plan: string
+  logo_url?: string
 }
 
 interface TenantSwitcherProps {
-    tenants?: Tenant[]
-    currentTenant?: Tenant
-    onTenantChange?: (tenant: Tenant) => void
-    onCreateTenant?: () => void
-    onManageTenants?: () => void
-    className?: string
+  tenants: Tenant[]
+  defaultTenantId?: string
+  onTenantChange?: (tenant: Tenant) => void
+  className?: string
 }
 
 export function TenantSwitcher({
-    tenants = [],
-    currentTenant,
-    onTenantChange,
-    onCreateTenant,
-    onManageTenants,
-    className,
+  tenants,
+  defaultTenantId,
+  onTenantChange,
+  className,
 }: TenantSwitcherProps) {
-    const [isOpen, setIsOpen] = useState(false)
+  const [selectedTenant, setSelectedTenant] = React.useState<Tenant | null>(null)
 
-    const handleTenantSelect = (tenant: Tenant) => {
-        onTenantChange?.(tenant)
-        setIsOpen(false)
+  React.useEffect(() => {
+    // Load saved tenant from localStorage
+    const savedTenantId = localStorage.getItem("emily-selected-tenant-id")
+    if (savedTenantId) {
+      const saved = tenants.find((t) => t.id === savedTenantId)
+      if (saved) {
+        setSelectedTenant(saved)
+        return
+      }
     }
-
-    const getPlanBadgeVariant = (plan?: string): "default" | "secondary" | "outline" | "destructive" => {
-        switch (plan) {
-            case "enterprise":
-                return "default"
-            case "professional":
-                return "secondary"
-            case "basic":
-                return "outline"
-            default:
-                return "outline"
-        }
+    
+    // Fall back to default or first tenant
+    if (defaultTenantId) {
+      const found = tenants.find((t) => t.id === defaultTenantId)
+      setSelectedTenant(found || tenants[0] || null)
+    } else {
+      setSelectedTenant(tenants[0] || null)
     }
+  }, [tenants, defaultTenantId])
 
-    return (
-        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
-            <DropdownMenuTrigger asChild>
-                <Button
-                    variant="outline"
-                    className={cn(
-                        "flex items-center gap-2 min-w-[200px] justify-between",
-                        "hover:bg-accent hover:text-accent-foreground",
-                        className
-                    )}
-                >
-                    <div className="flex items-center gap-2 truncate">
-                        {currentTenant?.logo_url ? (
-                            <img
-                                src={currentTenant.logo_url}
-                                alt={currentTenant.name}
-                                className="w-5 h-5 rounded object-contain"
-                            />
-                        ) : (
-                            <Building2 className="w-4 h-4 shrink-0" />
-                        )}
-                        <span className="truncate font-medium">
-                            {currentTenant?.name || "Select Organization"}
-                        </span>
-                    </div>
-                    <ChevronDown className="w-4 h-4 shrink-0 opacity-50" />
-                </Button>
-            </DropdownMenuTrigger>
+  const handleTenantSelect = (tenant: Tenant) => {
+    setSelectedTenant(tenant)
+    localStorage.setItem("emily-selected-tenant-id", tenant.id)
+    onTenantChange?.(tenant)
+  }
 
-            <DropdownMenuContent
-                align="start"
-                className="w-[280px]"
-                sideOffset={8}
-            >
-                <DropdownMenuLabel className="flex items-center justify-between">
-                    <span>Organizations</span>
-                    {onCreateTenant && (
-                        <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                onCreateTenant()
-                                setIsOpen(false)
-                            }}
-                            className="h-7 text-xs"
-                        >
-                            <Plus className="w-3 h-3 mr-1" />
-                            New
-                        </Button>
-                    )}
-                </DropdownMenuLabel>
+  if (!selectedTenant) {
+    return null
+  }
 
-                <DropdownMenuSeparator />
-
-                {/* Current tenant indicator */}
-                {currentTenant && (
-                    <DropdownMenuItem
-                        className="flex flex-col items-start gap-1 p-3 cursor-default focus:bg-transparent"
-                        disabled
-                    >
-                        <div className="flex items-center gap-2 w-full">
-                            {currentTenant.logo_url ? (
-                                <img
-                                    src={currentTenant.logo_url}
-                                    alt={currentTenant.name}
-                                    className="w-6 h-6 rounded object-contain"
-                                />
-                            ) : (
-                                <Building2 className="w-5 h-5" />
-                            )}
-                            <span className="font-medium truncate">
-                                {currentTenant.name}
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-2 w-full ml-8">
-                            <Badge
-                                variant={getPlanBadgeVariant(currentTenant.plan)}
-                                className="text-[10px] h-5"
-                            >
-                                {currentTenant.plan || "basic"}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground">
-                                Current
-                            </span>
-                        </div>
-                    </DropdownMenuItem>
-                )}
-
-                {tenants.length > 0 && tenants.filter(t => t.id !== currentTenant?.id).length > 0 && (
-                    <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuLabel className="text-xs text-muted-foreground">
-                            Switch to
-                        </DropdownMenuLabel>
-                    </>
-                )}
-
-                {/* Tenant list */}
-                {tenants
-                    .filter((t) => t.id !== currentTenant?.id)
-                    .map((tenant) => (
-                        <DropdownMenuItem
-                            key={tenant.id}
-                            onClick={() => handleTenantSelect(tenant)}
-                            className="flex items-center gap-2 p-2"
-                        >
-                            {tenant.logo_url ? (
-                                <img
-                                    src={tenant.logo_url}
-                                    alt={tenant.name}
-                                    className="w-5 h-5 rounded object-contain"
-                                />
-                            ) : (
-                                <Building className="w-4 h-4 text-muted-foreground" />
-                            )}
-                            <div className="flex flex-col flex-1 min-w-0">
-                                <span className="truncate font-medium">
-                                    {tenant.name}
-                                </span>
-                                {tenant.plan && (
-                                    <Badge
-                                        variant={getPlanBadgeVariant(tenant.plan)}
-                                        className="text-[10px] h-4 w-fit mt-0.5"
-                                    >
-                                        {tenant.plan}
-                                    </Badge>
-                                )}
-                            </div>
-                        </DropdownMenuItem>
-                    ))
-                }
-
-                {/* Management option */}
-                {onManageTenants && (
-                    <>
-                        <DropdownMenuSeparator />
-                        <DropdownMenuItem
-                            onClick={() => {
-                                onManageTenants()
-                                setIsOpen(false)
-                            }}
-                            className="flex items-center gap-2 text-muted-foreground"
-                        >
-                            <Settings className="w-4 h-4" />
-                            <span>Manage Organizations</span>
-                        </DropdownMenuItem>
-                    </>
-                )}
-            </DropdownMenuContent>
-        </DropdownMenu>
-    )
+  return (
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          className={`flex items-center gap-2 px-2 py-1.5 h-auto text-sm ${className}`}
+        >
+          {selectedTenant.logo_url && (
+            <img
+              src={selectedTenant.logo_url}
+              alt={selectedTenant.name}
+              className="w-5 h-5 rounded"
+            />
+          )}
+          <span className="font-medium">{selectedTenant.name}</span>
+          <Badge variant="secondary" className="text-xs px-1.5 py-0">
+            {selectedTenant.plan.toUpperCase()}
+          </Badge>
+          <ChevronDown className="w-4 h-4 text-muted-foreground" />
+        </Button>
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        {tenants.map((tenant) => (
+          <DropdownMenuItem
+            key={tenant.id}
+            onClick={() => handleTenantSelect(tenant)}
+            className="flex items-center gap-2 py-2"
+          >
+            {tenant.logo_url && (
+              <img
+                src={tenant.logo_url}
+                alt={tenant.name}
+                className="w-6 h-6 rounded"
+              />
+            )}
+            <div className="flex flex-col">
+              <span className="font-medium">{tenant.name}</span>
+              <span className="text-xs text-muted-foreground font-mono">
+                {tenant.slug}
+              </span>
+            </div>
+            {tenant.id === selectedTenant.id && (
+              <Badge variant="outline" className="ml-auto text-xs">
+                Active
+              </Badge>
+            )}
+          </DropdownMenuItem>
+        ))}
+      </DropdownMenuContent>
+    </DropdownMenu>
+  )
 }

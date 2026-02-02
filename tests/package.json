@@ -1,0 +1,16 @@
+{
+  "name": "emily-api-tests",
+  "version": "1.0.0",
+  "description": "API tests for Emily Phase 2",
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:tenants": "vitest run tenants.test.ts",
+    "test:white-label": "vitest run white-label.test.ts",
+    "test:credit": "vitest run credit.test.ts",
+    "test:trust": "vitest run trust.test.ts"
+  },
+  "devDependencies": {
+    "vitest": "^1.0.0"
+  }
+}

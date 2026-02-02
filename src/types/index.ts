@@ -57,6 +57,76 @@ export type Collection = {
     hidden_in_portal: boolean
 }
 
+// Tenant Types
+export type TenantStatus = 'active' | 'suspended' | 'trial' | 'cancelled'
+
+export type Tenant = {
+    id: string
+    name: string
+    slug: string
+    owner_id: string
+    status: TenantStatus
+    settings: TenantSettings
+    white_label_config: WhiteLabelConfig | null
+    created_at: string
+    updated_at: string
+}
+
+export type TenantSettings = {
+    max_users: number
+    max_storage_gb: number
+    features: string[]
+    plan: 'free' | 'starter' | 'professional' | 'enterprise'
+}
+
+export type WhiteLabelConfig = {
+    company_name: string
+    logo_url: string | null
+    primary_color: string
+    secondary_color: string | null
+    custom_domain: string | null
+    favicon_url: string | null
+}
+
+export type TenantMember = {
+    id: string
+    tenant_id: string
+    user_id: string
+    email: string
+    name: string
+    role: 'owner' | 'admin' | 'member' | 'viewer'
+    status: 'active' | 'invited' | 'suspended'
+    joined_at: string
+    invited_at: string | null
+}
+
+export type TenantInsert = {
+    name: string
+    slug: string
+    settings?: Partial<TenantSettings>
+    white_label_config?: Partial<WhiteLabelConfig>
+}
+
+export type TenantUpdate = {
+    name?: string
+    settings?: Partial<TenantSettings>
+    white_label_config?: Partial<WhiteLabelConfig>
+    status?: TenantStatus
+}
+
+export type InviteRequest = {
+    email: string
+    role: 'admin' | 'member' | 'viewer'
+}
+
+export type InviteResponse = {
+    id: string
+    email: string
+    role: string
+    invite_token: string
+    expires_at: string
+}
+
 // Generic Row helper (usage: Row<'items'>)
 export type Row<T extends keyof Database['public']['Tables']> =
     Database['public']['Tables'][T]['Row']
@@ -101,4 +171,3 @@ export const GEMINI_MODELS = [
     { id: 'gemini-1.5-flash', name: 'Gemini 1.5 Flash', type: 'flash' },
     { id: 'gemini-1.5-pro', name: 'Gemini 1.5 Pro (Smarter)', type: 'pro' },
 ]
-
