@@ -76,8 +76,8 @@ export async function GET(
             pagination: {
                 page,
                 limit,
-                total: count || 0,
-                totalPages: Math.ceil((count || 0) / limit)
+                // Note: Total count not available in this Supabase version
+                hasMore: members && members.length === limit
             }
         })
     } catch (err) {
