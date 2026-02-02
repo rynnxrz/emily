@@ -59,10 +59,9 @@ export async function GET(
         if (status) query = query.eq('status', status)
         if (role) query = query.eq('role', role)
 
-        const { data: members, error: fetchError, count } = await query
+        const { data: members, error: fetchError } = await query
             .order('joined_at', { ascending: false })
             .range(offset, offset + limit - 1)
-            .count()
 
         if (fetchError) {
             console.error('Error fetching members:', fetchError)
