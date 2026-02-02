@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
       credit_limit: creditLimit,
       current_balance: 0,
       available_credit: creditLimit,
-      payment_terms,
+      paymentTerms,
       interest_rate: interestRate,
       status: 'ACTIVE',
       approved_at: new Date().toISOString(),
