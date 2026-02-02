@@ -1,9 +1,9 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import type { Item } from '@/types'
 import { ItemsPageClient } from './components/ItemsPageClient'
 
 export default async function ItemsPage() {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     // Check if user is admin

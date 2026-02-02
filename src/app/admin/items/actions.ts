@@ -1,10 +1,10 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { revalidatePath } from 'next/cache'
 
 export async function syncItemVariants(itemName: string, updates: { collection_id?: string | null, material?: string | null }) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Verify admin
     const { data: { user } } = await supabase.auth.getUser()

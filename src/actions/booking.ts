@@ -1,6 +1,6 @@
 'use server'
 
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServiceSupabaseClient } from "@/lib/supabase/server"
 import { revalidatePath } from 'next/cache'
 
 // Public email domains to ignore for organization detection
@@ -51,7 +51,7 @@ export async function createGuestBooking(data: GuestBookingData) {
     }
 
     // Use service role to bypass RLS for guest bookings
-    const supabase = createServiceClient()
+    const supabase = createServiceSupabaseClient()
 
     // 1. Validate email format
     if (!isValidEmail(data.email)) {

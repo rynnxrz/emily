@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 
 // GET /api/credit/[clientId]/transactions - List credit transactions
 export async function GET(
@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ clientId: string }> }
 ) {
   const { clientId } = await params
-  const supabase = await createClient()
+  const supabase = await createServerSupabaseClient()
 
   const { searchParams } = new URL(request.url)
   const limit = parseInt(searchParams.get('limit') || '50')

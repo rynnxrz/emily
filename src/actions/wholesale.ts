@@ -1,6 +1,6 @@
 'use server'
 
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServiceSupabaseClient } from "@/lib/supabase/server"
 import { cookies } from 'next/headers'
 
 const WHOLESALE_AUTH_COOKIE = 'wholesale_authenticated'
@@ -11,7 +11,7 @@ export async function verifyWholesalePassword(password: string): Promise<{ succe
         return { success: false, error: 'Please enter a password' }
     }
 
-    const supabase = createServiceClient()
+    const supabase = createServiceSupabaseClient()
 
     const { data: settings, error } = await supabase
         .from('app_settings')

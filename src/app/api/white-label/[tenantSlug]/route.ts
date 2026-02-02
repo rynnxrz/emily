@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { NextRequest, NextResponse } from 'next/server'
 
 // GET /api/white-label/[tenantSlug]
@@ -9,7 +9,7 @@ export async function GET(
 ) {
   try {
     const { tenantSlug } = await params
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Get tenant by slug
     const { data: tenant, error: tenantError } = await supabase

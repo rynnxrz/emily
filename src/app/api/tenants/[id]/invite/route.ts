@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { NextResponse } from 'next/server'
 import type { InviteRequest, InviteResponse } from '@/types'
 
@@ -37,7 +37,7 @@ export async function POST(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id: tenantId } = await params
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Require owner or admin role
     const { access, error } = await getUserWithTenantAccess(

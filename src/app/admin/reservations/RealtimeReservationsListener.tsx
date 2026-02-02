@@ -2,12 +2,12 @@
 
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/lib/supabase/client'
+import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import { toast } from 'sonner'
 
 export function RealtimeReservationsListener() {
     const router = useRouter()
-    const supabase = createClient()
+    const supabase = createServerSupabaseClient()
 
     useEffect(() => {
         const channel = supabase

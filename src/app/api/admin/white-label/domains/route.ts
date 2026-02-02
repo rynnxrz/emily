@@ -1,13 +1,13 @@
-import { createClient } from '@/lib/supabase/server'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
+import { createServiceSupabaseClient } from "@/lib/supabase/server"
 import { NextRequest, NextResponse } from 'next/server'
 
 // POST /api/admin/white-label/domains
 // Add custom domain - Admin only
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient()
-    const serviceClient = createServiceClient()
+    const supabase = await createServerSupabaseClient()
+    const serviceClient = createServiceSupabaseClient()
 
     // Check authentication
     const { data: { user }, error: authError } = await supabase.auth.getUser()
@@ -163,7 +163,7 @@ export async function POST(request: NextRequest) {
 // List domains for tenant - Admin only
 export async function GET(request: NextRequest) {
   try {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     const { searchParams } = new URL(request.url)
     const tenantId = searchParams.get('tenant_id')
 

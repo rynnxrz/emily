@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 
 // POST /api/credit/[clientId]/adjust - Manual balance adjustment (admin)
 export async function POST(
@@ -7,7 +7,7 @@ export async function POST(
   { params }: { params: Promise<{ clientId: string }> }
 ) {
   const { clientId } = await params
-  const supabase = await createClient()
+  const supabase = await createServerSupabaseClient()
   const body = await request.json()
 
   const { amount, type, reason, adminId } = body

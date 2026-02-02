@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import {
@@ -17,7 +17,7 @@ import { Users } from 'lucide-react'
 export const dynamic = 'force-dynamic'
 
 export default async function CustomersPage() {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // 1. Auth Check
     const { data: { user } } = await supabase.auth.getUser()

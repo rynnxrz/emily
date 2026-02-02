@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { redirect } from 'next/navigation'
 import { format } from 'date-fns'
 import Link from 'next/link'
@@ -31,7 +31,7 @@ export default async function AdminReservationsPage({ searchParams }: PageProps)
     const filter = resolvedSearchParams.filter || 'action_required'
     const customerEmail = resolvedSearchParams.customer
 
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data: { user } } = await supabase.auth.getUser()
 

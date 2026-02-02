@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { NextResponse } from 'next/server'
 
 // Helper to get current user and check tenant access
@@ -36,7 +36,7 @@ export async function GET(
     { params }: { params: Promise<{ id: string }> }
 ) {
     const { id: tenantId } = await params
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { access, error } = await getUserWithTenantAccess(supabase, tenantId)
     if (error || !access) {

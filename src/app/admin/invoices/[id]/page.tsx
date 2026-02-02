@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { redirect, notFound } from 'next/navigation'
 import Link from 'next/link'
 import { format } from 'date-fns'
@@ -62,7 +62,7 @@ interface PageProps {
 export default async function InvoiceDetailPage({ params }: PageProps) {
     const { id } = await params
 
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')

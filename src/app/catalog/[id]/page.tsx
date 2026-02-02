@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { notFound } from 'next/navigation'
 import { ItemDetailClient } from './ItemDetailClient'
 import { RelatedItems } from './RelatedItems'
@@ -16,7 +16,7 @@ export const dynamic = 'force-dynamic'
 export default async function ItemDetailPage({ params, searchParams }: Props) {
     const { id } = await params
     const { context } = await searchParams
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data: item, error } = await supabase
         .from('items')

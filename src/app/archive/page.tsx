@@ -1,11 +1,11 @@
 import { Suspense } from 'react'
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { ArchiveClient } from './ArchiveClient'
 
 export const dynamic = 'force-dynamic'
 
 export default async function ArchivePage() {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const [
         { data: items, error: itemsError },

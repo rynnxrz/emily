@@ -1,14 +1,14 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { AdminPageHeader } from '@/components/admin/AdminPageHeader'
 import { Package, Calendar, Users, TrendingUp } from 'lucide-react'
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { redirect } from 'next/navigation'
 
 import { SystemStatusWidget } from './SystemStatusWidget'
 import { EmergencyBackupsPanel } from './EmergencyBackupsPanel'
 
 export default async function AdminDashboard() {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     const { data: { user } } = await supabase.auth.getUser()
 
     if (!user) redirect('/login')

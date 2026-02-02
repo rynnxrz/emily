@@ -1,10 +1,10 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { NextResponse } from 'next/server'
 import type { Tenant, TenantStatus } from '@/types'
 
 // Helper to get current user
 async function getCurrentUser() {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     const { data: { user }, error } = await supabase.auth.getUser()
     if (error || !user) {
         return { user: null, error: 'Unauthorized' }

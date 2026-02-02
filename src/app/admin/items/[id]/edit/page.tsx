@@ -1,7 +1,7 @@
 import { notFound } from 'next/navigation'
 import { getItem } from '@/actions/items'
 import { ItemForm } from '@/components/admin/ItemForm'
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 
 interface EditItemPageProps {
     params: Promise<{ id: string }>
@@ -12,7 +12,7 @@ export default async function EditItemPage({ params }: EditItemPageProps) {
     // Check if getItem handles auth internaly or if we should use supabase directly for all?
     // Using existing getItem action is fine for consistency. 
     // But for categories/collections we use supabase direct query as it's simple read.
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const [
         itemResult,

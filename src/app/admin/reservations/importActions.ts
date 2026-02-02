@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient, createServiceSupabaseClient } from "@/lib/supabase/server"
 import { revalidatePath } from 'next/cache'
 import { z } from 'zod'
 
@@ -34,7 +34,7 @@ const importSchema = z.object({
 })
 
 export async function importRequestFromJSON(jsonString: string, force: boolean = false) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // 1. Admin Auth Check
     const { data: { user } } = await supabase.auth.getUser()
@@ -70,7 +70,7 @@ export async function importRequestFromJSON(jsonString: string, force: boolean =
     const startDate = dates.from
     const endDate = dates.to
 
-    const serviceClient = createServiceClient()
+    const serviceClient = createServiceSupabaseClient()
 
     // 4. Fingerprint Check (De-Duplication)
     if (fingerprint) {

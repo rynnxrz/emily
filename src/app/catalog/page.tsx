@@ -1,6 +1,6 @@
 import { Suspense } from 'react'
 import { unstable_cache } from 'next/cache'
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServiceSupabaseClient } from "@/lib/supabase/server"
 import { CatalogClient } from '../CatalogClient'
 
 // Force dynamic rendering to ensure we always get latest items (shell), but verify data is cached
@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic'
 // Cached Data Fetcher
 const getCachedCatalogData = unstable_cache(
     async () => {
-        const supabase = createServiceClient()
+        const supabase = createServiceSupabaseClient()
         return Promise.all([
             supabase
                 .from('items')

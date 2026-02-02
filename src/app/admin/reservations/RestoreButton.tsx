@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react'
 import { RotateCcw, Loader2 } from 'lucide-react'
-import { createClient } from '@/lib/supabase/client'
+import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { toast } from 'sonner'
@@ -28,7 +28,7 @@ export function RestoreButton({ reservationId, groupId, itemCount = 1 }: Restore
     const [showConfirm, setShowConfirm] = useState(false)
     const [isPending, startTransition] = useTransition()
     const router = useRouter()
-    const supabase = createClient()
+    const supabase = createServerSupabaseClient()
 
     const isGroup = !!groupId && itemCount > 1
 

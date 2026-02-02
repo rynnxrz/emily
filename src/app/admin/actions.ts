@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient, createServiceSupabaseClient } from "@/lib/supabase/server"
 import { generateInvoicePdf, fetchImageAsBase64, InvoiceItem } from '@/lib/pdf/generateInvoice'
 import { sendApprovalEmail } from '@/lib/email/sendApprovalEmail'
 import { sendShippingEmail } from '@/lib/email/sendShippingEmail'
@@ -34,7 +34,7 @@ async function getBillingProfile(supabase: SupabaseClientLike, profileId: string
 // ============================================================
 
 export async function createBillingProfile(formData: FormData) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Auth Check
     const { data: { user } } = await supabase.auth.getUser()
@@ -87,7 +87,7 @@ export async function createBillingProfile(formData: FormData) {
 }
 
 export async function updateBillingProfile(profileId: string, formData: FormData) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Auth Check
     const { data: { user } } = await supabase.auth.getUser()
@@ -131,7 +131,7 @@ export async function updateBillingProfile(profileId: string, formData: FormData
 }
 
 export async function deleteBillingProfile(profileId: string) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Auth Check
     const { data: { user } } = await supabase.auth.getUser()
@@ -171,7 +171,7 @@ export async function deleteBillingProfile(profileId: string) {
 }
 
 export async function setDefaultProfile(profileId: string) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Auth Check
     const { data: { user } } = await supabase.auth.getUser()
@@ -207,7 +207,7 @@ export async function setDefaultProfile(profileId: string) {
 }
 
 export async function updateSettings(formData: FormData) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // 1. Auth Check
     const { data: { user } } = await supabase.auth.getUser()
@@ -255,7 +255,7 @@ export async function updateSettings(formData: FormData) {
 }
 
 export async function approveReservation(reservationId: string, profileId: string, notes?: string) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // 1. Auth Check
     const { data: { user } } = await supabase.auth.getUser()
@@ -331,7 +331,7 @@ export async function approveReservation(reservationId: string, profileId: strin
 
     // 6. Build Invoice Items List
     const invoiceItems: InvoiceItem[] = []
-    const serviceClient = createServiceClient()
+    const serviceClient = createServiceSupabaseClient()
 
     // Generate Invoice Record in DB to get the correct Invoice Number
     const invoiceResult = await generateInvoiceFromReservation(reservationId, profileId)
@@ -449,7 +449,7 @@ export async function approveReservation(reservationId: string, profileId: strin
 }
 
 export async function markAsShipped(reservationId: string, attachInvoice: boolean = false) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // 1. Auth
     const { data: { user } } = await supabase.auth.getUser()
@@ -636,7 +636,7 @@ export async function saveEvidence(
     imagePaths: string[],
     notes?: string
 ) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     // ... Auth ...
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Unauthorized' }
@@ -684,7 +684,7 @@ export async function saveEvidence(
 }
 
 export async function finalizeReturn(reservationId: string) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     // ... Auth ...
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { error: 'Unauthorized' }
@@ -708,7 +708,7 @@ export async function finalizeReturn(reservationId: string) {
 // ============================================================
 
 export async function archiveReservationGroup(groupId: string) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Auth Check
     const { data: { user } } = await supabase.auth.getUser()
@@ -739,7 +739,7 @@ export async function archiveReservationGroup(groupId: string) {
 }
 
 export async function restoreReservationGroup(groupId: string) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Auth Check
     const { data: { user } } = await supabase.auth.getUser()

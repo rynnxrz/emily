@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { redirect } from 'next/navigation'
 import SettingsClient from './SettingsClient'
 import type { BillingProfile, Category, Collection } from '@/types'
@@ -7,7 +7,7 @@ import { getCategories, getCollections } from './actions'
 export const dynamic = 'force-dynamic'
 
 export default async function SettingsPage() {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // 1. Auth Check
     const { data: { user } } = await supabase.auth.getUser()

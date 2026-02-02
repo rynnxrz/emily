@@ -16,7 +16,7 @@ import {
 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Separator } from '@/components/ui/separator'
-import { createClient } from '@/lib/supabase/client'
+import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import {
     Sheet,
@@ -46,7 +46,7 @@ const navItems = [
 export const Sidebar = () => {
     const pathname = usePathname()
     const router = useRouter()
-    const supabase = createClient()
+    const supabase = createServerSupabaseClient()
     const [isHovered, setIsHovered] = useState(false)
     const [isMobileOpen, setIsMobileOpen] = useState(false)
 

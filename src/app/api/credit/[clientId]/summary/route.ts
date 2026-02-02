@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 
 // GET /api/credit/[clientId]/summary - Get credit summary
 export async function GET(
@@ -7,7 +7,7 @@ export async function GET(
   { params }: { params: Promise<{ clientId: string }> }
 ) {
   const { clientId } = await params
-  const supabase = await createClient()
+  const supabase = await createServerSupabaseClient()
 
   const { data: creditProfile, error } = await supabase
     .from('credit_profiles')

@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient, createServiceSupabaseClient } from "@/lib/supabase/server"
 import { revalidatePath } from 'next/cache'
 
 const PUBLIC_EMAIL_DOMAINS = new Set([
@@ -43,7 +43,7 @@ export async function submitBulkRequest(data: BulkRequestData) {
     // Use Service Role to bypass RLS for Guest/Public booking flow.
     // This allows creating profiles/reservations without an authenticated user session,
     // relying on the specific 'booking_password' validation below for security.
-    const supabase = createServiceClient()
+    const supabase = createServiceSupabaseClient()
 
     // 1. Validation
     if (!data.items || data.items.length === 0) return { error: 'No items selected.' }

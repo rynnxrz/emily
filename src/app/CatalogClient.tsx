@@ -5,7 +5,7 @@ import * as React from "react"
 import { format, parse } from "date-fns"
 import { Calendar as CalendarIcon, X, ShoppingBag, Plus, Pencil, Check, Loader2, Filter, ChevronDown } from "lucide-react"
 import { DateRange } from "react-day-picker"
-import { createClient } from "@/lib/supabase/client"
+import { createBrowserSupabaseClient } from
 import Link from "next/link"
 import Image from "next/image"
 import { useRouter, useSearchParams } from "next/navigation"
@@ -142,7 +142,7 @@ export function CatalogClient({ initialItems, categories, collections }: Catalog
 
     // SWR Fetcher for Supabase RPC
     const fetcher = async ({ url, args }: { url: string, args: any }) => {
-        const supabase = createClient()
+        const supabase = createServerSupabaseClient()
         const { data, error } = await supabase.rpc(url, args)
         if (error) throw error
         return data

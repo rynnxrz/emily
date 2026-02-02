@@ -1,10 +1,10 @@
 'use server'
 
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient, createServiceSupabaseClient } from "@/lib/supabase/server"
 import { revalidatePath } from 'next/cache'
 
 export async function retrySystemError(errorId: string) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // 1. Auth Check
     const { data: { user } } = await supabase.auth.getUser()
@@ -18,7 +18,7 @@ export async function retrySystemError(errorId: string) {
     if (profile?.role !== 'admin') return { error: 'Forbidden' }
 
     // 2. Fetch Error Details
-    const serviceClient = createServiceClient()
+    const serviceClient = createServiceSupabaseClient()
     const { data: errorRecord } = await serviceClient
         .from('system_errors')
         .select('*')

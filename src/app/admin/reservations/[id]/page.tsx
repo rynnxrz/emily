@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import { format } from 'date-fns'
@@ -13,7 +13,7 @@ interface Props {
 
 export default async function RequestDetailPage(props: Props) {
     const params = await props.params
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Auth
     const { data: { user } } = await supabase.auth.getUser()

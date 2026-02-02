@@ -1,10 +1,10 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { revalidatePath } from 'next/cache'
 
 export async function getCategories() {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     const { data, error } = await supabase
         .from('categories')
         .select('*')
@@ -15,7 +15,7 @@ export async function getCategories() {
 }
 
 export async function getCollections() {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     const { data, error } = await supabase
         .from('collections')
         .select('*')
@@ -26,7 +26,7 @@ export async function getCollections() {
 }
 
 export async function toggleCategoryVisibility(id: string, hidden: boolean) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Auth check
     const { data: { user } } = await supabase.auth.getUser()
@@ -43,7 +43,7 @@ export async function toggleCategoryVisibility(id: string, hidden: boolean) {
 }
 
 export async function toggleCollectionVisibility(id: string, hidden: boolean) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Auth check
     const { data: { user } } = await supabase.auth.getUser()
@@ -60,7 +60,7 @@ export async function toggleCollectionVisibility(id: string, hidden: boolean) {
 }
 
 export async function deleteCategory(id: string) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Auth check
     const { data: { user } } = await supabase.auth.getUser()
@@ -77,7 +77,7 @@ export async function deleteCategory(id: string) {
 }
 
 export async function deleteCollection(id: string) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Auth check
     const { data: { user } } = await supabase.auth.getUser()
@@ -102,7 +102,7 @@ const slugify = (value: string) => {
 }
 
 export async function createCategory(name: string) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Unauthorized')
 
@@ -117,7 +117,7 @@ export async function createCategory(name: string) {
 }
 
 export async function createCollection(name: string) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) throw new Error('Unauthorized')
 
@@ -163,7 +163,7 @@ export async function saveAISettingsAction(settings: {
     console.log('   ├─ Max Output Tokens:', settings.ai_max_output_tokens || 'default')
     console.log('   └─ Use System Instruction:', settings.ai_use_system_instruction ? '✓ Enabled' : '○ Disabled')
 
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return { success: false, error: 'Unauthorized' }
 
@@ -251,7 +251,7 @@ export async function restoreDefaultAISettingsAction() {
 }
 
 export async function getAISettingsAction() {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     const baseSelect =
         'ai_selected_model, ai_prompt_category, ai_prompt_subcategory, ai_prompt_product_list, ai_prompt_quick_list, ai_prompt_product_detail'
     const fullSelect =

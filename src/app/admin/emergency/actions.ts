@@ -1,6 +1,6 @@
 'use server'
 
-import { createServiceClient } from '@/lib/supabase/server'
+import { createServiceSupabaseClient } from "@/lib/supabase/server"
 import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/lib/auth/guards'
 
@@ -119,7 +119,7 @@ function extractOrganizationDomain(email: string): string | null {
 
 export async function convertEmergencyBackup(backupId: string) {
     await requireAdmin()
-    const supabase = createServiceClient()
+    const supabase = createServiceSupabaseClient()
 
     const { data: backup, error: fetchError } = await supabase
         .from('emergency_backups')

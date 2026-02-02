@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
 import { format } from 'date-fns'
@@ -41,7 +41,7 @@ export default async function InvoicesPage({ searchParams }: PageProps) {
     const resolvedParams = await searchParams
     const filter = resolvedParams.filter || 'all'
 
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) redirect('/login')

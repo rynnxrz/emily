@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import { v4 as uuidv4 } from 'uuid'
 
 interface ImageUploadProps {
@@ -13,7 +13,7 @@ interface ImageUploadProps {
 export default function ImageUpload({ onUpload, bucket = 'rental_items', folder = 'items' }: ImageUploadProps) {
     const [uploading, setUploading] = useState(false)
     const [preview, setPreview] = useState<string | null>(null)
-    const supabase = createClient()
+    const supabase = createServerSupabaseClient()
 
     const handleUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         try {

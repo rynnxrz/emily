@@ -1,11 +1,11 @@
-import { createClient } from "@/lib/supabase/server"
+import { createServerSupabaseClient } from
 import { format } from "date-fns"
 import { AlertTriangle, CheckCircle, Clock } from "lucide-react"
 import { RedirectToLogin } from "../../../components/admin/RedirectToLogin"
 import { RetryButton } from "./RetryButton"
 
 export default async function ErrorLogsPage() {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data: { user } } = await supabase.auth.getUser()
     if (!user) return <RedirectToLogin />

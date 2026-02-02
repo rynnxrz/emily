@@ -42,3 +42,4 @@ next-env.d.ts
 
 # sensitive docs
 rules.txt
+.env*.local

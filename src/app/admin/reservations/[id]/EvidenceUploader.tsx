@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
-import { createClient } from '@/lib/supabase/client'
+import { createBrowserSupabaseClient } from '@/lib/supabase/client'
 import { saveEvidence } from '../../actions'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -39,7 +39,7 @@ export default function EvidenceUploader({
     const [isSaved, setIsSaved] = useState(false)
     const [isSaving, startSaveTransition] = useTransition()
     const router = useRouter()
-    const supabase = createClient()
+    const supabase = createServerSupabaseClient()
 
     const title = type === 'dispatch' ? 'Dispatch Evidence (Before Request)' : 'Return Evidence (After Return)'
     const description = type === 'dispatch'

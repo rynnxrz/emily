@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 import { revalidatePath } from 'next/cache'
 import { Resend } from 'resend'
 import { generateInvoicePdf, fetchImageAsBase64, InvoiceItem } from '@/lib/pdf/generateInvoice'
@@ -18,7 +18,7 @@ interface CommunicationSettings {
 }
 
 export async function updateCommunicationSettings(settings: CommunicationSettings) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Auth Check
     const { data: { user } } = await supabase.auth.getUser()
@@ -72,7 +72,7 @@ interface SendTestEmailParams {
 }
 
 export async function sendTestEmail(params: SendTestEmailParams) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Auth Check
     const { data: { user } } = await supabase.auth.getUser()

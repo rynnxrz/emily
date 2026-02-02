@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Image from 'next/image'
-import { createClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient } from "@/lib/supabase/server"
 
 interface Props {
     collectionId: string
@@ -9,7 +9,7 @@ interface Props {
 }
 
 export async function RelatedItems({ collectionId, currentId, isArchiveMode }: Props) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Artificial delay to demonstrate Suspense (optional, but requested implicitly by "slow down 0.5s")
     // await new Promise(resolve => setTimeout(resolve, 500))

@@ -3,7 +3,7 @@
 import * as React from "react"
 import { addDays, format, parse } from "date-fns"
 import { CalendarIcon, Loader2, ArrowLeft } from "lucide-react"
-import { createClient } from "@/lib/supabase/client"
+import { createBrowserSupabaseClient } from
 import Link from "next/link"
 
 import { cn } from "@/lib/utils"
@@ -33,7 +33,7 @@ export function BookingForm({ item }: BookingFormProps) {
     const [isAvailable, setIsAvailable] = React.useState<boolean | null>(null)
     const [isMounted, setIsMounted] = React.useState(false)
 
-    const supabase = createClient()
+    const supabase = createServerSupabaseClient()
 
     const [reservedDates, setReservedDates] = React.useState<{ from: Date; to: Date }[]>([])
     const [bufferDates, setBufferDates] = React.useState<{ from: Date; to: Date }[]>([])

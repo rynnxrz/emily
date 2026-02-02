@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient, createServiceSupabaseClient } from "@/lib/supabase/server"
 import { revalidatePath } from 'next/cache'
 import type { ItemInsert, ItemUpdate } from '@/types'
 import { requireAdmin } from '@/lib/auth/guards'
@@ -16,7 +16,7 @@ const slugify = (value: string, prefix: string) => {
 }
 
 export async function getItems() {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data, error } = await supabase
         .from('items')
@@ -31,7 +31,7 @@ export async function getItems() {
 }
 
 export async function getItem(id: string) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data, error } = await supabase
         .from('items')
@@ -48,7 +48,7 @@ export async function getItem(id: string) {
 
 export async function createItem(item: ItemInsert) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data, error } = await supabase
         .from('items')
@@ -66,7 +66,7 @@ export async function createItem(item: ItemInsert) {
 
 export async function updateItem(id: string, item: ItemUpdate) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data, error } = await supabase
         .from('items')
@@ -86,7 +86,7 @@ export async function updateItem(id: string, item: ItemUpdate) {
 
 export async function deleteItem(id: string) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { error } = await supabase
         .from('items')
@@ -106,7 +106,7 @@ export async function deleteItem(id: string) {
 
 export async function archiveItem(id: string) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { error } = await supabase
         .from('items')
@@ -123,7 +123,7 @@ export async function archiveItem(id: string) {
 
 export async function uploadItemImage(formData: FormData) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const file = formData.get('file') as File
     if (!file) {
@@ -151,7 +151,7 @@ export async function uploadItemImage(formData: FormData) {
 
 export async function createCategory(name: string) {
     await requireAdmin()
-    const supabase = createServiceClient()
+    const supabase = createServiceSupabaseClient()
     const slug = slugify(name, 'category')
 
     const { data, error } = await supabase
@@ -171,7 +171,7 @@ export async function createCategory(name: string) {
 
 export async function createCollection(name: string) {
     await requireAdmin()
-    const supabase = createServiceClient()
+    const supabase = createServiceSupabaseClient()
     const slug = slugify(name, 'collection')
 
     const { data, error } = await supabase
@@ -393,7 +393,7 @@ Further guidelines:
  * Returns SYSTEM_INSTRUCTION if ai_use_system_instruction is true, otherwise undefined.
  */
 async function getSystemInstructionIfEnabled(): Promise<string | undefined> {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     const { data } = await supabase
         .from('app_settings')
         .select('ai_use_system_instruction')
@@ -821,7 +821,7 @@ export async function extractCategoriesAction(sourceUrl: string, modelId?: strin
 
     try {
         // Fetch Settings
-        const supabase = await createClient()
+        const supabase = await createServerSupabaseClient()
         const { data: settings } = await supabase.from('app_settings').select('ai_selected_model, ai_prompt_category').single()
 
         // Use provided modelId, or falling back to settings, or default
@@ -944,7 +944,7 @@ export async function extractCategoriesStreamAction(sourceUrl: string, modelId?:
                 }
 
                 // Fetch Settings
-                const supabase = await createClient()
+                const supabase = await createServerSupabaseClient()
                 const { data: settings } = await supabase.from('app_settings').select('ai_selected_model, ai_prompt_category').single()
 
                 // Use provided modelId, or falling back to settings, or default
@@ -1081,7 +1081,7 @@ export async function exploreSubCategoriesAction(
     try {
         const ai = getGeminiClient()
 
-        const supabase = await createClient()
+        const supabase = await createServerSupabaseClient()
         const { data: settings } = await supabase.from('app_settings').select('ai_selected_model, ai_prompt_subcategory').single()
         const activeModelId = modelId || settings?.ai_selected_model || 'gemini-2.0-flash'
 
@@ -1204,7 +1204,7 @@ async function extractProductLinks(categoryUrl: string): Promise<string[]> {
 
     const ai = getGeminiClient()
 
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     const { data: settings } = await supabase.from('app_settings').select('ai_selected_model, ai_prompt_product_list').single()
     const activeModelId = settings?.ai_selected_model || 'gemini-2.0-flash'
 
@@ -1258,7 +1258,7 @@ async function scrapeProductPage(url: string, modelId: string = 'gemini-2.0-flas
 
     const ai = getGeminiClient()
 
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     const { data: settings } = await supabase.from('app_settings').select('ai_selected_model, ai_prompt_product_detail').single()
     // Prefer passed modelId if specific (though usually it comes from settings upstream), else settings, else default
     // Note: scanCategoriesAction passes the modelId which comes from UI -> Settings, so we likely just use modelId here.
@@ -1377,7 +1377,7 @@ export async function scanCategoriesAction(
     modelId: string = 'gemini-2.0-flash'
 ): Promise<ScanResult & { needsContinue?: boolean }> {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     let totalItemsScraped = 0
 
     try {
@@ -1544,7 +1544,7 @@ export async function scanCategoriesAction(
  */
 export async function createStagingBatchAction(sourceUrl: string): Promise<{ batchId: string | null; error: string | null }> {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data, error } = await supabase
         .from('staging_imports')
@@ -1563,7 +1563,7 @@ export async function createStagingBatchAction(sourceUrl: string): Promise<{ bat
  * Gets the current progress of a scanning batch.
  */
 export async function getScanProgressAction(batchId: string): Promise<ScanProgress | null> {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data } = await supabase
         .from('staging_imports')
@@ -1586,7 +1586,7 @@ export async function getScanProgressAction(batchId: string): Promise<ScanProgre
  * Gets all staging items for a batch.
  */
 export async function getStagingItemsAction(batchId: string) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data, error } = await supabase
         .from('staging_items')
@@ -1609,7 +1609,7 @@ export async function getStagingItemsAction(batchId: string) {
  * Gets all import batches with their item counts.
  */
 export async function getImportBatchesAction() {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data, error } = await supabase
         .from('staging_imports')
@@ -1652,7 +1652,7 @@ export async function getImportBatchesAction() {
  */
 export async function removeStagingItemAction(id: string) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { error } = await supabase
         .from('staging_items')
@@ -1687,7 +1687,7 @@ export async function updateStagingItemAction(
     }
 ) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data, error } = await supabase
         .from('staging_items')
@@ -1710,7 +1710,7 @@ export async function updateStagingItemAction(
  */
 export async function renameStagingGroupAction(oldName: string, newName: string, batchId: string) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Find all items whose group key matches the old name
     const { data: items, error: fetchError } = await supabase
@@ -1748,7 +1748,7 @@ export async function renameStagingGroupAction(oldName: string, newName: string,
  */
 export async function deleteStagingBatchAction(batchId: string) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // 1. Delete items first (cascade should handle this usually, but safe to be explicit)
     const { error: itemsError } = await supabase
@@ -1781,8 +1781,8 @@ export async function deleteStagingBatchAction(batchId: string) {
  */
 export async function commitStagingItemsAction(batchId: string) {
     await requireAdmin()
-    const supabase = await createClient()
-    const serviceClient = await createServiceClient()
+    const supabase = await createServerSupabaseClient()
+    const serviceClient = await createServiceSupabaseClient()
 
     // 1. Get all pending staging items for this batch
     const { data: stagingItems, error: fetchError } = await supabase
@@ -1914,7 +1914,7 @@ export async function commitStagingItemsAction(batchId: string) {
  * Gets all pending staging items across all batches.
  */
 export async function getAllPendingStagingItemsAction() {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data, error } = await supabase
         .from('staging_items')
@@ -1963,7 +1963,7 @@ export async function quickScanAction(
 ): Promise<QuickScanResult> {
     await requireAdmin()
     const startTime = Date.now()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
     let totalItemsFound = 0
 
     console.log('\n🚀 [Speed Scan] Starting index-only scan (no categorization)...')
@@ -2114,7 +2114,7 @@ export async function quickScanStreamAction(
     const stream = createStreamableValue()
 
         ; (async () => {
-            const supabase = await createClient()
+            const supabase = await createServerSupabaseClient()
             let totalItemsFound = 0
             const ai = getGeminiClient()
 
@@ -2271,7 +2271,7 @@ export async function autoCategorizeStagingItemsAction(
     modelId: string = 'gemini-2.0-flash'
 ): Promise<{ success: boolean; error: string | null; updatedCount: number; unmatched: string[] }> {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const [{ data: items, error: itemsError }, { data: categories, error: categoriesError }] = await Promise.all([
         supabase
@@ -2393,7 +2393,7 @@ export async function deepEnrichAction(
     stagingItemId: string
 ): Promise<{ success: boolean; error: string | null }> {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Get the staging item
     const { data: stagingItem, error: fetchError } = await supabase
@@ -2508,7 +2508,7 @@ export async function batchDeepEnrichAction(
     batchId: string
 ): Promise<{ success: boolean; error: string | null; enrichedCount: number; failedCount: number; total: number }> {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Get all pending items that need enrichment
     const { data: items, error: fetchError } = await supabase
@@ -2631,7 +2631,7 @@ export async function testSpeedScanAction(
             const startTime = Date.now()
 
             try {
-                const supabase = await createClient()
+                const supabase = await createServerSupabaseClient()
 
                 // Get custom prompt if set
                 const { data: settings } = await supabase

@@ -1,6 +1,6 @@
 'use server'
 
-import { createClient, createServiceClient } from '@/lib/supabase/server'
+import { createServerSupabaseClient, createServiceSupabaseClient } from "@/lib/supabase/server"
 import { revalidatePath } from 'next/cache'
 import { requireAdmin } from '@/lib/auth/guards'
 import { generateInvoicePdf, fetchImageAsBase64, InvoiceItem } from '@/lib/pdf/generateInvoice'
@@ -77,7 +77,7 @@ export interface UpdateInvoiceInput {
  */
 export async function createManualInvoice(input: CreateManualInvoiceInput) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Calculate total from items
     const total_amount = input.items.reduce((sum, item) => sum + item.total, 0)
@@ -141,7 +141,7 @@ export async function generateInvoiceFromReservation(
     billingProfileId?: string
 ) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Fetch reservation with items and customer
     const { data: reservations, error: resError } = await supabase
@@ -282,7 +282,7 @@ export async function generateInvoiceFromReservation(
  */
 export async function markInvoiceAsPaid(invoiceId: string) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Update invoice status
     const { data: invoice, error: updateError } = await supabase
@@ -332,7 +332,7 @@ export async function markInvoiceAsPaid(invoiceId: string) {
  */
 export async function updateInvoice(invoiceId: string, input: UpdateInvoiceInput) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Check current status
     const { data: currentInvoice, error: checkError } = await supabase
@@ -412,7 +412,7 @@ export async function updateInvoice(invoiceId: string, input: UpdateInvoiceInput
  * Fetches a single invoice with its items.
  */
 export async function getInvoice(invoiceId: string) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { data: invoice, error } = await supabase
         .from('invoices')
@@ -440,7 +440,7 @@ export async function getInvoices(filters?: {
     category?: InvoiceCategory
     unpaidOnly?: boolean
 }) {
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     let query = supabase
         .from('invoices')
@@ -477,7 +477,7 @@ export async function getInvoices(filters?: {
  */
 export async function deleteInvoice(invoiceId: string) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // Check current status
     const { data: invoice, error: checkError } = await supabase
@@ -514,7 +514,7 @@ export async function deleteInvoice(invoiceId: string) {
  */
 export async function voidInvoice(invoiceId: string) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { error } = await supabase
         .from('invoices')
@@ -535,7 +535,7 @@ export async function voidInvoice(invoiceId: string) {
  */
 export async function updateInvoiceStatus(invoiceId: string, status: InvoiceStatus) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     const { error } = await supabase
         .from('invoices')
@@ -557,7 +557,7 @@ export async function updateInvoiceStatus(invoiceId: string, status: InvoiceStat
  */
 export async function downloadInvoicePdf(invoiceId: string) {
     await requireAdmin()
-    const supabase = await createClient()
+    const supabase = await createServerSupabaseClient()
 
     // 1. Fetch Invoice
     const { data: invoice, error } = await supabase
@@ -575,7 +575,7 @@ export async function downloadInvoicePdf(invoiceId: string) {
     }
 
     // 2. Prepare items with images
-    const serviceClient = createServiceClient()
+    const serviceClient = createServiceSupabaseClient()
     const invoiceItems: InvoiceItem[] = []
 
     for (const item of invoice.invoice_items) {
